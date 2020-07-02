@@ -1,19 +1,61 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import openSocket from 'socket.io-client'
+// import SocketIOClient from 'socket.io-client'
 
-function App() {
-  const [ text, setText] = useState([])
-  const appendText = () => {
-    setText(text.concat([document.getElementById("input").value]))
-  } 
-  return (
-    <div className="App">
-      {text.map( item => <p>{item}</p> )}
-      <input  id="input"></input> 
-      <button onClick={() => appendText()}>добавить</button>
-    </div>
-  );
+// const socket = SocketIOClient('http://localhost:8000/')
+
+const socket = openSocket('http://localhost:8080/')
+const name = 'Jeff'
+
+
+class App extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      text: '',
+      messages: []
+    }
+  }
+
+  componentDidMount = () => {
+    socket.emit('message', name)
+    socket.on('message', data => {
+      console.log(data)
+      this.setState({
+        text: '',
+        messages: [...this.state.messages, data.text]
+      })
+    })
+  }
+
+
+  handleChange = e => {
+    this.setState({ text: e.target.value })
+  }
+
+  handleSubmit = e => {
+    e.preventDefault()
+    console.log('submited')
+    this.setState(state => ({ ...state, text: '' }))
+    socket.emit('message', this.state.text)
+  }
+
+  render() {
+
+    return (
+      <div>
+        <form onSubmit={this.handleSubmit}>
+          <input onChange={this.handleChange} value={this.state.text} />
+        </form>
+        <div>
+          {this.state.messages.map((message, index) => (
+            <p key={index}>{message}</p>
+          ))}
+        </div>
+      </div>
+    )
+  }
 }
 
-export default App;
+export default App

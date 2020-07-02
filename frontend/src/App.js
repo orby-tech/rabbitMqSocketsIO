@@ -9,11 +9,7 @@ function App() {
   } 
   return (
     <div className="App">
-      {text.map( item => 
-      
-          <p>{item}</p>
-
-      )}
+      {text.map( item => <p>{item}</p> )}
       <input  id="input"></input> 
       <button onClick={() => appendText()}>добавить</button>
     </div>

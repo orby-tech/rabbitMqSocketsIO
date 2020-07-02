@@ -1,4 +1,6 @@
 var io = require('socket.io').listen(8080); 
+var amqp = require('amqplib/callback_api');
+
 io.set('log level', 1);
 io.sockets.on('connection', function (socket) {
 
